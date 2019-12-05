@@ -6,25 +6,24 @@ import (
 	"time"
 )
 
+var Logger *logrus.Logger
+
 type LogConfig struct {
-	Level uint32 `toml:"level"`
+	Level     uint32 `toml:"level"`
+	Directory string `toml:"directory"`
 }
 
 func InitLogger(config *LogConfig) (err error) {
-	// 设置日志格式为json格式
 	logrus.SetFormatter(&logrus.JSONFormatter{})
-
-	// 设置将日志输出到标准输出（默认的输出为stderr,标准错误）
-	// 日志消息输出可以是任意的io.writer类型
-	file := time.Now().Format("20060102") + ".log" //文件名
-	logFile, err := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
-	if nil != err {
-		panic(err)
+	file := config.Directory + time.Now().Format("20060102") + ".log" //文件名
+	logFile, e := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
+	if e != nil {
+		return e
 	}
-	logrus.SetOutput(logFile)
-
 	// 设置日志级别为warn以上
 	logrus.SetLevel(logrus.Level(config.Level))
+	Logger = LoggerNew()
+	Logger.Out = logFile
 	return err
 }
 
@@ -32,10 +31,16 @@ func GetLog() *LogConfig {
 	return config.Log
 }
 
-func Log() *logrus.Logger {
+func LoggerNew() *logrus.Logger {
 	return logrus.New()
 }
 
-func LogInfo(fields logrus.Fields, msg interface{}) {
-	Log().WithFields(fields).Info(msg)
+type Fields map[string]interface{}
+
+func LogInfo(msg ...interface{}) {
+	Logger.Info(msg)
+}
+
+func LogInfoFields(fields Fields, msg interface{}) {
+	Logger.WithFields(logrus.Fields(fields)).Info(msg)
 }

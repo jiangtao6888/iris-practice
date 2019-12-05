@@ -6,6 +6,8 @@ import (
 	_ "sync"
 )
 
+var Cache *redis.Client
+
 type CacheConfig struct {
 	Host     string `toml:"host"`
 	Port     int    `toml:"port"`
@@ -14,19 +16,20 @@ type CacheConfig struct {
 	PoolSize int    `toml:"poolsize"`
 }
 
-func Redis() *redis.Client {
-	return redis.NewClient(config.GetConfig())
-}
-
-//var Cache = redis.NewClient(cache.GetConfig())
-
-func (c *Config) GetConfig() *redis.Options {
+func (c *CacheConfig) CacheConfig() *redis.Options {
 	config := &redis.Options{
-		Addr:     c.Cache.Host + ":" + strconv.Itoa(c.Cache.Port),
-		Password: c.Cache.Password,
-		PoolSize: c.Cache.PoolSize,
+		Addr:     c.Host + ":" + strconv.Itoa(c.Port),
+		Password: c.Password,
+		PoolSize: c.PoolSize,
 	}
 	return config
 }
 
+func InitCache(c *CacheConfig) error {
+	Cache = redis.NewClient(c.CacheConfig())
+	return nil
+}
 
+func GetCache() *CacheConfig {
+	return config.Cache
+}

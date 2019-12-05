@@ -12,17 +12,20 @@
 
 #日志
 [log]
-    level = "INFO"
+    directory       = "./storage/logs/"
+    level           = 5
 
 [db]
+    drive           = "mysql"
     host            = "10.52.161.50"
-    port            = 3306
+    port            = "3306"
     user            = "root"
     password        = "root"
     charset         = "utf8mb4"
     database        = "iris"
     timeout         = 3
-    max_idle_conns  = 128
+    max_open_conns  = 128
+    max_idle_conns  = 64
     max_conn_ttl    = 60
     debug           = true
 #reids
