@@ -2,6 +2,7 @@
     network_interface  = "eth0"
     bind_interface     = true
     use_interface_ip   = true
+    charset            = "utf8"
 
 [server.http]
     host               = "localhost"
@@ -9,26 +10,31 @@
     charset            = "UTF-8"
     gzip               = true
     pprof              = false
+[server.http.log]
+    directory          = "/Users/knight/go/iris/src/storage/httplogs/"
+    level              = 5
+    time_format        = "2006-01-02 15:04:05.000"
+    color              = false
+    terminal           = false
 
-#日志
 [log]
-    directory       = "./storage/logs/"
+    directory       = "/Users/knight/go/iris/src/storage/logs/"
     level           = 5
 
 [db]
     drive           = "mysql"
-    host            = "10.52.161.50"
+    host            = "127.0.0.1"
     port            = "3306"
     user            = "root"
     password        = "root"
-    charset         = "utf8mb4"
+    charset         = "utf8"
     database        = "iris"
     timeout         = 3
     max_open_conns  = 128
     max_idle_conns  = 64
-    max_conn_ttl    = 60
+    max_conn_ttl    = 3600
     debug           = true
-#reids
+
 [cache]
     host            = "127.0.0.1"
     port            = 6379
@@ -37,5 +43,4 @@
     poolsize        = 128
 
 [jwt]
-    #jwt key
     secret = "$2a$10$9KvAFraMtXnarydGSbXkqeE0EnTKNI4Uvra7WOgMOCD2NE6RHmVo2"

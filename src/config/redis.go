@@ -6,7 +6,7 @@ import (
 	_ "sync"
 )
 
-var Cache *redis.Client
+
 
 type CacheConfig struct {
 	Host     string `toml:"host"`

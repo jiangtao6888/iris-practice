@@ -7,8 +7,6 @@ import (
 	"time"
 )
 
-var DB *sql.DB
-
 type DbConfig struct {
 	Drive                string `toml:"drive"`
 	Host                 string `toml:"host"`
@@ -25,13 +23,14 @@ type DbConfig struct {
 }
 
 func InitDB(c *DbConfig) error {
-	if Logger == nil {
+	if Log == nil || Log.Logger == nil {
 		return errors.New("logger uninitialized")
 	}
 	DB, _ = sql.Open(c.Drive, c.User+":"+c.Password+"@tcp("+c.Host+":"+c.Port+")"+c.Database)
 	DB.SetMaxOpenConns(c.MaxOpenConns)
 	DB.SetMaxIdleConns(c.MaxIdleConns)
 	DB.SetConnMaxLifetime(time.Duration(c.MaxConnTtlMaxConnTtl))
+
 	return nil
 }
 

@@ -10,7 +10,7 @@ import (
 	"syscall"
 )
 
-var configFile = flag.String("c", "config.toml", "config file")
+var configFile = flag.String("c", "/Users/knight/go/iris/src/toml/config.toml", "config file")
 
 func main() {
 	// parse flag
@@ -25,6 +25,10 @@ func main() {
 	if err := config.InitLogger(config.GetLog()); err != nil {
 		log.Fatalf("Fatal Error: can't initialize logger!!!\n%s", err)
 	}
+	//init access log
+	if err := config.InitLogger(config.GetAccLog()); err != nil {
+		log.Fatalf("Fatal Error: can't initialize acc logger!!!\n%s", err)
+	}
 
 	//init cache
 	if err := config.InitCache(config.GetCache()); err != nil {
@@ -35,8 +39,10 @@ func main() {
 	if err := config.InitDB(config.GetDB()); err != nil {
 		log.Fatalf("Fatal Error: can't initialize mysql!!!\n%s", err)
 	}
-
-	config.NewApp()
+	// init http
+	if err := config.InitHttpServer(config.GetHttp()); err != nil {
+		log.Fatalf("Fatal Error: can't initialize mysql!!!\n%s", err)
+	}
 
 	// waite for exit signal
 	exit := make(chan os.Signal)
@@ -52,5 +58,5 @@ func main() {
 
 	// catch exit signal
 	sign := <-exit
-	config.LogInfo("stop by exit signal '%s'", sign)
+	config.Log.LogInfo("stop by exit signal '%s'", sign)
 }

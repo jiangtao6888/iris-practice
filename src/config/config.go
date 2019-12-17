@@ -8,10 +8,10 @@ type Config struct {
 	Server *ServerConfig `toml:"server"`
 	DB     *DbConfig     `toml:"db"`
 	Cache  *CacheConfig  `toml:"cache"`
-	Log    *LogConfig    `toml:"log"`
+	SysLog *SysLogConfig `toml:"log"`
 }
 
-var config *Config
+
 
 func InitConfig(file string) error {
 	config = &Config{
