@@ -6,21 +6,12 @@ import (
 	"time"
 )
 
-
-
 type Logger struct {
 	Logger *logrus.Logger
 }
 
 func (l *Logger) Write(p []byte) (n int, err error) {
 	return
-}
-
-type logInterface interface {
-	directory() string
-	level() uint32
-	name() string
-	new(f *os.File)
 }
 
 func (l *SysLogConfig) name() string {
@@ -38,11 +29,6 @@ func (l *SysLogConfig) level() uint32 {
 func (l *SysLogConfig) new(f *os.File) {
 	Log = &Logger{Logger: logrus.New()}
 	Log.Logger.Out = f
-}
-
-type SysLogConfig struct {
-	Level     uint32 `toml:"level"`
-	Directory string `toml:"directory"`
 }
 
 func InitLogger(l logInterface) (err error) {

@@ -24,7 +24,7 @@ func (u *user) UserInfo(ctx context.Context) {
 	user, err := Service.User.GetUserInfo(req.UserId)
 	if err != nil {
 		config.Log.LogInfo("用户信息为空")
-		Helpers.Error(ctx, Code.ErrorCode, Code.Message[Code.ErrorCode])
+		Helpers.Error(ctx, Code.ErrorCode)
 		return
 	}
 
@@ -35,7 +35,7 @@ func (u *user) UserInfo(ctx context.Context) {
 	}
 
 	if err := Helpers.ConvertStruct(user, rsp.Data); err != nil {
-		Helpers.Error(ctx, Code.ErrorCode, Code.Message[Code.ErrorCode])
+		Helpers.Error(ctx, Code.ErrorCode)
 		return
 	}
 	Helpers.SendRsp(ctx, rsp)

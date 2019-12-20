@@ -11,7 +11,6 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -19,37 +18,63 @@ type AccessLog struct {
 	Logger *logrus.Logger
 }
 
-type ServerConfig struct {
-	NetworkInterface string      `toml:"network_interface"`
-	BindInterface    bool        `toml:"bind_interface"`
-	UseInterfaceIp   bool        `toml:"use_interface_ip"`
-	Http             *HttpConfig `toml:"http"`
-	Charset          string      `toml:"charset"`
+func GetAccLog() *HttpLogConfig {
+	return config.Server.Http.Log
 }
 
-type HttpConfig struct {
-	Host    string         `toml:"host"`
-	Port    int            `toml:"port"`
-	Charset string         `toml:"charset"`
-	Gzip    bool           `toml:"gzip"`
-	PProf   bool           `toml:"pprof"`
-	Log     *HttpLogConfig `toml:"log"`
+func GetHttp() *ServerConfig {
+	return config.Server
 }
 
-type HttpLogConfig struct {
-	Level      uint32 `toml:"level"`
-	Directory  string `toml:"directory"`
-	TimeFormat string `toml:"time_format"`
-	Color      bool   `toml:"color"`
+func InitHttpServer(c *ServerConfig, route Router) error {
+	HttpServer = NewServer(c, AccLog, route)
+	HttpServer.Start(c)
+	return nil
 }
 
-type Server struct {
-	sync.Mutex
-	config   *ServerConfig
-	router   Router
-	app      *iris.Application
-	ctx      stdContext.Context
-	canceler func()
+func GetClientIp(ctx context.Context) string {
+	xForwarded := ctx.GetHeader("X-Forwarded-For")
+
+	if ip := strings.TrimSpace(strings.Split(xForwarded, ",")[0]); ip != "" {
+		return ip
+	}
+
+	if xReal := strings.TrimSpace(ctx.GetHeader("X-Real-Ip")); xReal != "" {
+		return xReal
+	}
+
+	return ctx.RemoteAddr()
+}
+
+func NewServer(c *ServerConfig, OutFile *AccessLog, router Router) *Server {
+	server := &Server{config: c, router: router}
+	server.app = iris.New()
+	server.ctx, server.canceler = stdContext.WithCancel(stdContext.Background())
+
+	server.app.Use(server.Recovery)
+	server.app.Use(server.AccessLog)
+
+	// enable gzip
+	if c.Http.Gzip {
+		server.app.Use(iris.Gzip)
+	}
+
+	// enable pprof
+	if c.Http.PProf {
+		server.app.Any("/debug/pprof", pprof.New())
+		server.app.Any("/debug/pprof/{action:path}", pprof.New())
+	}
+
+	// set logger
+	server.app.Logger().SetLevel(string(c.Http.Log.Level))
+	server.app.Logger().SetTimeFormat(c.Http.Log.TimeFormat)
+	server.app.Logger().SetOutput(OutFile)
+	server.app.Logger().Printer.IsTerminal = c.Http.Log.Color
+
+	// set route
+	server.router.RegHttpHandler(server.app)
+
+	return server
 }
 
 func (l *HttpLogConfig) directory() string {
@@ -69,10 +94,6 @@ func (l *HttpLogConfig) name() string {
 	return "access-" + time.Now().Format("20060102") + ".log"
 }
 
-func GetAccLog() *HttpLogConfig {
-	return config.Server.Http.Log
-}
-
 func (l *AccessLog) LogInfo(msg ...interface{}) {
 	l.Logger.Info(msg)
 }
@@ -85,9 +106,8 @@ func (l *AccessLog) Write(p []byte) (n int, err error) {
 	return
 }
 
-type Router interface {
-	RegHttpHandler(app *iris.Application)
-	GetIdentifier(ctx context.Context) string
+func (c *ServerConfig) GetHost() string {
+	return c.Http.Host + ":" + strconv.Itoa(c.Http.Port)
 }
 
 func (s *Server) Running() bool {
@@ -97,20 +117,6 @@ func (s *Server) Running() bool {
 	default:
 		return true
 	}
-}
-
-func GetHttp() *ServerConfig {
-	return config.Server
-}
-
-func (c *ServerConfig) GetHost() string {
-	return c.Http.Host + ":" + strconv.Itoa(c.Http.Port)
-}
-
-func InitHttpServer(c *ServerConfig, route Router) error {
-	HttpServer = NewServer(c, AccLog, route)
-	HttpServer.Start(c)
-	return nil
 }
 
 func (s *Server) Start(c *ServerConfig) {
@@ -131,20 +137,6 @@ func (s *Server) Start(c *ServerConfig) {
 		}
 	}()
 
-}
-
-func GetClientIp(ctx context.Context) string {
-	xForwarded := ctx.GetHeader("X-Forwarded-For")
-
-	if ip := strings.TrimSpace(strings.Split(xForwarded, ",")[0]); ip != "" {
-		return ip
-	}
-
-	if xReal := strings.TrimSpace(ctx.GetHeader("X-Real-Ip")); xReal != "" {
-		return xReal
-	}
-
-	return ctx.RemoteAddr()
 }
 
 // recovery panic (500)
@@ -194,35 +186,4 @@ func (s *Server) AccessLog(ctx context.Context) {
 		"idf":        idf,
 	}
 	AccLog.LogInfoFields(filed, "request")
-}
-
-func NewServer(c *ServerConfig, OutFile *AccessLog, router Router) *Server {
-	server := &Server{config: c, router: router}
-	server.app = iris.New()
-	server.ctx, server.canceler = stdContext.WithCancel(stdContext.Background())
-
-	server.app.Use(server.Recovery)
-	server.app.Use(server.AccessLog)
-
-	// enable gzip
-	if c.Http.Gzip {
-		server.app.Use(iris.Gzip)
-	}
-
-	// enable pprof
-	if c.Http.PProf {
-		server.app.Any("/debug/pprof", pprof.New())
-		server.app.Any("/debug/pprof/{action:path}", pprof.New())
-	}
-
-	// set logger
-	server.app.Logger().SetLevel(string(c.Http.Log.Level))
-	server.app.Logger().SetTimeFormat(c.Http.Log.TimeFormat)
-	server.app.Logger().SetOutput(OutFile)
-	server.app.Logger().Printer.IsTerminal = c.Http.Log.Color
-
-	// set route
-	server.router.RegHttpHandler(server.app)
-
-	return server
 }
