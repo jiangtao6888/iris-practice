@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package iris.common;
+
+option go_package = "libraries/proto";
+
+
+message Response {
+    // response code
+    int64 code = 1;
+
+    // response message
+    string message = 2;
+
+    // data
+    map<int32, string> data = 3;
+}
+

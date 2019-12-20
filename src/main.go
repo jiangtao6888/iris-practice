@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"iris/config"
+	"iris/routes"
 	"log"
 	"os"
 	"os/signal"
@@ -40,7 +41,7 @@ func main() {
 		log.Fatalf("Fatal Error: can't initialize mysql!!!\n%s", err)
 	}
 	// init http
-	if err := config.InitHttpServer(config.GetHttp()); err != nil {
+	if err := config.InitHttpServer(config.GetHttp(), routes.Router); err != nil {
 		log.Fatalf("Fatal Error: can't initialize mysql!!!\n%s", err)
 	}
 

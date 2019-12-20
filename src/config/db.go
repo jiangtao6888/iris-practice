@@ -1,10 +1,10 @@
 package config
 
 import (
-	"database/sql"
 	"errors"
-	_ "github.com/go-sql-driver/mysql"
-	"time"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/kataras/iris/v12"
 )
 
 type DbConfig struct {
@@ -22,16 +22,18 @@ type DbConfig struct {
 	Debug                bool   `toml:"debug"`
 }
 
-func InitDB(c *DbConfig) error {
+func InitDB(c *DbConfig) (err error) {
 	if Log == nil || Log.Logger == nil {
 		return errors.New("logger uninitialized")
 	}
-	DB, _ = sql.Open(c.Drive, c.User+":"+c.Password+"@tcp("+c.Host+":"+c.Port+")"+c.Database)
-	DB.SetMaxOpenConns(c.MaxOpenConns)
-	DB.SetMaxIdleConns(c.MaxIdleConns)
-	DB.SetConnMaxLifetime(time.Duration(c.MaxConnTtlMaxConnTtl))
-
-	return nil
+	DB, err = gorm.Open(c.Drive, c.User+":"+c.Password+"@/"+c.Database+"?charset=utf8&parseTime=True&loc=Local") //protocol("+c.Host+":"+c.Port+")
+	if err != nil {
+		Log.LogInfo("orm failed to initialized: ", err)
+	}
+	iris.RegisterOnInterrupt(func() {
+		_ = DB.Close()
+	})
+	return err
 }
 
 func GetDB() *DbConfig {

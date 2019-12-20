@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package iris.user;
+option go_package = "libraries/proto";
+
+message User {
+    int32 id = 1;
+    string name = 2;
+    string username = 3;
+    int32 role_id = 4;
+}
+
+// HTTP POST request: /user
+message UserRequest {
+    int64 user_id = 1;
+}
+
+// HTTP response: /user
+message UserResponse {
+    int32 code = 1;
+    string message = 2;
+    User data = 3;
+}

@@ -7,7 +7,6 @@ import (
 	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/middleware/pprof"
 	"github.com/sirupsen/logrus"
-	"iris/routes"
 	"os"
 	"runtime"
 	"strconv"
@@ -15,7 +14,6 @@ import (
 	"sync"
 	"time"
 )
-
 
 type AccessLog struct {
 	Logger *logrus.Logger
@@ -109,8 +107,8 @@ func (c *ServerConfig) GetHost() string {
 	return c.Http.Host + ":" + strconv.Itoa(c.Http.Port)
 }
 
-func InitHttpServer(c *ServerConfig) error {
-	HttpServer = NewServer(c, AccLog)
+func InitHttpServer(c *ServerConfig, route Router) error {
+	HttpServer = NewServer(c, AccLog, route)
 	HttpServer.Start(c)
 	return nil
 }
@@ -187,19 +185,19 @@ func (s *Server) AccessLog(ctx context.Context) {
 	statusCode, useTime, clientIp := ctx.GetStatusCode(), time.Since(start), GetClientIp(ctx)
 	uri, method, userAgent := ctx.Request().URL.RequestURI(), ctx.Method(), ctx.GetHeader("User-Agent")
 	filed := Fields{
-		"statusCode":statusCode,
-		"clientIp":clientIp,
-		"useTime":useTime,
-		"method":method,
-		"uri":uri,
-		"userAgent":userAgent,
-		"idf":idf,
+		"statusCode": statusCode,
+		"clientIp":   clientIp,
+		"useTime":    useTime,
+		"method":     method,
+		"uri":        uri,
+		"userAgent":  userAgent,
+		"idf":        idf,
 	}
-	AccLog.LogInfoFields(filed,"request")
+	AccLog.LogInfoFields(filed, "request")
 }
 
-func NewServer(c *ServerConfig, OutFile *AccessLog) *Server {
-	server := &Server{config: c, router: routes.Router}
+func NewServer(c *ServerConfig, OutFile *AccessLog, router Router) *Server {
+	server := &Server{config: c, router: router}
 	server.app = iris.New()
 	server.ctx, server.canceler = stdContext.WithCancel(stdContext.Background())
 
