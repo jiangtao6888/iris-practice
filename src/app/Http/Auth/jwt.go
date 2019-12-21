@@ -8,7 +8,12 @@ import (
 )
 
 func TokenHandler(ctx iris.Context) string {
+	return GetToken(1)
+}
+
+func GetToken(Id int64) string {
 	token := jwt.NewTokenWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": Id,
 		// 签发人
 		"iss": "iris",
 		// 签发时间
@@ -16,7 +21,6 @@ func TokenHandler(ctx iris.Context) string {
 		// 设定过期时间，便于测试，设置1分钟过期
 		"exp": time.Now().Add(1 * time.Hour * time.Duration(1)).Unix(),
 	})
-
 	// Sign and get the complete encoded token as a string using the secret
 	tokenString, _ := token.SignedString([]byte(config.GetJwt().Secret))
 	return tokenString

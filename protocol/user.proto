@@ -21,3 +21,20 @@ message UserResponse {
     string message = 2;
     User data = 3;
 }
+
+message Login {
+    int64 id = 1;
+    string username = 2;
+    string token = 3;
+}
+
+message LoginRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    int32 code = 1;
+    string message = 2;
+    Login data = 3;
+}
