@@ -29,7 +29,7 @@ func (s *login) Login(ctx context.Context) (rsp *proto.LoginResponse, err bool) 
 	info := &proto.Login{
 		Id:       u.Id,
 		Username: u.UserName,
-		Token:    Auth.GetToken(u.Id),
+		Token:    Auth.GetToken(u.Id, u.RoleId),
 	}
 
 	rsp = &proto.LoginResponse{

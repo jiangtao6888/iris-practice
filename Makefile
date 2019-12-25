@@ -18,6 +18,6 @@ p:
 
 	ls src/libraries/proto/*.pb.go | xargs sed -i -e "s/,omitempty//"
 	ls src/libraries/proto/*.pb.go | xargs sed -i -e "s@\"libraries/proto/@\"iris/libraries/proto/@"
-	rm -f src/libraries/proto/*/*.pb.go-e
+	rm -f src/libraries/proto/*.pb.go-e
 iris:
 	cd src; ${ENVARG} go build ${BUILDARG} -o ../bin/iris main.go;

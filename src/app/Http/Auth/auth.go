@@ -26,3 +26,4 @@ func AuthenticatedHandler(ctx iris.Context) {
 	config.Log.LogInfo("user.Valid:",user.Valid)
 	ctx.Next()
 }
+

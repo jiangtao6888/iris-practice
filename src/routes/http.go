@@ -9,17 +9,15 @@ import (
 )
 
 func (r *router) RegHttpHandler(app *iris.Application) {
-	app.Get("/", func(ctx iris.Context) {
-		jwt := Auth.TokenHandler(ctx)
-		ctx.HTML(" <h1>hi, the server is running</h1><br>Jwt:" + jwt)
-	})
 	app.Use(middleware.JsonCoder)
+
+	app.Get("/", Controllers.Home.Index)
 
 	app.Post("/login", Controllers.Login.Login)
 
 	user := app.Party("user")
 	{
-		//user.Use(Auth.AuthenticatedHandler)
+		user.Use(Auth.AuthenticatedHandler)
 		user.Post("/info", Controllers.User.UserInfo)
 	}
 }

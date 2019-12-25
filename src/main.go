@@ -45,6 +45,11 @@ func main() {
 		log.Fatalf("Fatal Error: can't initialize mysql!!!\n%s", err)
 	}
 
+	// init rpc
+	if err := config.InitRpcServer(config.GetRpc(), routes.RpcRouter); err != nil {
+		log.Fatalf("Fatal Error: can't initialize rpc!!!\n%s", err)
+	}
+
 	// waite for exit signal
 	exit := make(chan os.Signal)
 	stopSignal := []os.Signal{

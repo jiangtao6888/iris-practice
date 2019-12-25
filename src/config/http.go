@@ -27,7 +27,7 @@ func GetHttp() *ServerConfig {
 }
 
 func InitHttpServer(c *ServerConfig, route Router) error {
-	HttpServer = NewServer(c, AccLog, route)
+	HttpServer = NewHttpServer(c, AccLog, route)
 	HttpServer.Start(c)
 	return nil
 }
@@ -46,7 +46,7 @@ func GetClientIp(ctx context.Context) string {
 	return ctx.RemoteAddr()
 }
 
-func NewServer(c *ServerConfig, OutFile *AccessLog, router Router) *Server {
+func NewHttpServer(c *ServerConfig, OutFile *AccessLog, router Router) *Server {
 	server := &Server{config: c, router: router}
 	server.app = iris.New()
 	server.ctx, server.canceler = stdContext.WithCancel(stdContext.Background())

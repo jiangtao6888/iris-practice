@@ -5,6 +5,7 @@ import (
 	"github.com/go-redis/redis/v7"
 	"github.com/jinzhu/gorm"
 	"github.com/kataras/iris/v12"
+	"google.golang.org/grpc"
 	"sync"
 )
 
@@ -14,13 +15,15 @@ var AccLog *AccessLog
 var DB *gorm.DB
 var Log *Logger
 var Cache *redis.Client
+var Rpc *RpcServer
 
 type Config struct {
-	Server *ServerConfig `toml:"server"`
-	DB     *DbConfig     `toml:"db"`
-	Cache  *CacheConfig  `toml:"cache"`
-	SysLog *SysLogConfig `toml:"log"`
-	Jwt    *JwtConfig    `toml:"jwt"`
+	Server    *ServerConfig `toml:"server"`
+	DB        *DbConfig     `toml:"db"`
+	Cache     *CacheConfig  `toml:"cache"`
+	SysLog    *SysLogConfig `toml:"log"`
+	Jwt       *JwtConfig    `toml:"jwt"`
+	RpcConfig *RpcConfig    `toml:"rpc"`
 }
 
 type DbConfig struct {
@@ -86,4 +89,17 @@ type CacheConfig struct {
 
 type JwtConfig struct {
 	Secret string `toml:"secret"`
+}
+
+type RpcConfig struct {
+	Host string `toml:"host"`
+	Port int    `toml:"port"`
+}
+
+type RpcServer struct {
+	router   RpcRouter
+	Server   *grpc.Server
+	ctx      stdContext.Context
+	Log      *AccessLog
+	canceler func()
 }

@@ -38,3 +38,7 @@ message LoginResponse {
     string message = 2;
     Login data = 3;
 }
+
+service IrisService {
+    rpc GetUserInfo (UserRequest) returns (UserResponse);
+}

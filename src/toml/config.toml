@@ -16,7 +16,9 @@
     time_format        = "2006-01-02 15:04:05.000"
     color              = false
     terminal           = false
-
+[rpc]
+    host               = "localhost"
+    port               = 8089
 [log]
     directory       = "/Users/knight/go/iris/src/storage/logs/"
     level           = 5

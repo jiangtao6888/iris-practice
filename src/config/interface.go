@@ -17,3 +17,7 @@ type Router interface {
 	RegHttpHandler(app *iris.Application)
 	GetIdentifier(ctx context.Context) string
 }
+
+type RpcRouter interface {
+	RegRpcService(server *RpcServer)
+}

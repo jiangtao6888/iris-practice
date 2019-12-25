@@ -5,7 +5,6 @@ import (
 	"iris/app/Code"
 	"iris/app/Helpers"
 	"iris/app/Service"
-	"iris/config"
 	"iris/libraries/proto"
 )
 
@@ -18,23 +17,12 @@ func (u *user) UserInfo(ctx context.Context) {
 	req := &proto.UserRequest{}
 
 	if !Helpers.DecodeReq(ctx, req) {
-		return
-	}
-
-	user, err := Service.User.GetUserInfo(req.UserId)
-	if err != nil {
-		config.Log.LogInfo("用户信息为空")
 		Helpers.Error(ctx, Code.ErrorCode)
 		return
 	}
 
-	rsp := &proto.UserResponse{
-		Code:    Code.SuccessCode,
-		Message: Code.Message[Code.SuccessCode],
-		Data:    &proto.User{},
-	}
-
-	if err := Helpers.ConvertStruct(user, rsp.Data); err != nil {
+	rsp, err := Service.User.GetUserInfo(req.UserId)
+	if err != nil {
 		Helpers.Error(ctx, Code.ErrorCode)
 		return
 	}

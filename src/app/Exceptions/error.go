@@ -3,6 +3,8 @@ package Exceptions
 import (
 	"fmt"
 	"iris/app/Code"
+	"iris/config"
+	"iris/libraries/logger"
 )
 
 type Exception struct {
@@ -27,4 +29,17 @@ func Desc(code int64) string {
 		return e
 	}
 	return "server internal error"
+}
+
+func New(code int64, args ...interface{}) *Exception {
+	if len(args) > 0 {
+		if err, ok := args[0].(error); ok {
+			config.Log.LogInfo(logger.ErrorLevel, "Error: %s | Args: %+v", err, args[1:])
+		}
+	}
+	return &Exception{code: code, message: Desc(code)}
+}
+
+func (e *Exception) Error() string {
+	return Desc(e.code)
 }
