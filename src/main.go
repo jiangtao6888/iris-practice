@@ -40,6 +40,12 @@ func main() {
 	if err := config.InitDB(config.GetDB()); err != nil {
 		log.Fatalf("Fatal Error: can't initialize mysql!!!\n%s", err)
 	}
+
+	//init kafka
+	if err := config.InitKaProducer(config.GetKafka()); err != nil {
+		log.Fatalf("Fatal Error: can't initialize kafka!!!\n%s", err)
+	}
+
 	// init http
 	if err := config.InitHttpServer(config.GetHttp(), routes.Router); err != nil {
 		log.Fatalf("Fatal Error: can't initialize mysql!!!\n%s", err)

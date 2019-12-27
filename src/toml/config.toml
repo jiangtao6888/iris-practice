@@ -46,3 +46,6 @@
 
 [jwt]
     secret = "$2a$10$9KvAFraMtXnarydGSbXkqeE0EnTKNI4Uvra7WOgMOCD2NE6RHmVo2"
+
+[kafka]
+    brokers  = [ "localhost:9092" ]

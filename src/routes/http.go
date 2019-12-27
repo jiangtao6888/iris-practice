@@ -20,6 +20,11 @@ func (r *router) RegHttpHandler(app *iris.Application) {
 		user.Use(Auth.AuthenticatedHandler)
 		user.Post("/info", Controllers.User.UserInfo)
 	}
+
+	kafka := app.Party("kafka")
+	{
+		kafka.Get("/send", Controllers.Kafka.Send)
+	}
 }
 
 func (r *router) GetIdentifier(ctx context.Context) string {

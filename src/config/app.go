@@ -2,9 +2,11 @@ package config
 
 import (
 	stdContext "context"
+	"github.com/Shopify/sarama"
 	"github.com/go-redis/redis/v7"
 	"github.com/jinzhu/gorm"
 	"github.com/kataras/iris/v12"
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"sync"
 )
@@ -16,14 +18,16 @@ var DB *gorm.DB
 var Log *Logger
 var Cache *redis.Client
 var Rpc *RpcServer
+var KafkaProducer *Producer
 
 type Config struct {
-	Server    *ServerConfig `toml:"server"`
-	DB        *DbConfig     `toml:"db"`
-	Cache     *CacheConfig  `toml:"cache"`
-	SysLog    *SysLogConfig `toml:"log"`
-	Jwt       *JwtConfig    `toml:"jwt"`
-	RpcConfig *RpcConfig    `toml:"rpc"`
+	Server     *ServerConfig   `toml:"server"`
+	DB         *DbConfig       `toml:"db"`
+	Cache      *CacheConfig    `toml:"cache"`
+	SysLog     *SysLogConfig   `toml:"log"`
+	Jwt        *JwtConfig      `toml:"jwt"`
+	RpcConfig  *RpcConfig      `toml:"rpc"`
+	KaProducer *ProducerConfig `toml:"kafka"`
 }
 
 type DbConfig struct {
@@ -102,4 +106,17 @@ type RpcServer struct {
 	ctx      stdContext.Context
 	Log      *AccessLog
 	canceler func()
+}
+
+type ProducerConfig struct {
+	Brokers []string `toml:"brokers"`
+}
+
+type Producer struct {
+	c      *ProducerConfig
+	client sarama.AsyncProducer
+	log    *Logger
+	ctx    context.Context
+	cancel context.CancelFunc
+	wg     *sync.WaitGroup
 }
