@@ -16,8 +16,9 @@ var HttpServer *Server
 var AccLog *AccessLog
 var DB *gorm.DB
 var Log *Logger
-var Cache *redis.Client
+var Client *redis.Client
 var Rpc *RpcServer
+var Cache *RedisCache
 var KafkaProducer *Producer
 
 type Config struct {

@@ -21,11 +21,24 @@ func (u *user) UserInfo(ctx context.Context) {
 		return
 	}
 
-	rsp, err := Service.User.GetUserInfo(req.UserId)
+	rsp := &proto.UserResponse{
+		Code:    Code.SuccessCode,
+		Message: Code.Message[Code.SuccessCode],
+		Data:    &proto.User{},
+	}
+
+	user, err := Service.User.GetUserInfo(req.UserId)
+
 	if err != nil {
 		Helpers.Error(ctx, Code.ErrorCode)
 		return
 	}
+
+	if err := Helpers.ConvertStruct(user, rsp.Data); err != nil {
+		Helpers.Error(ctx, Code.ErrorCode)
+		return
+	}
+
 	Helpers.SendRsp(ctx, rsp)
 	return
 }

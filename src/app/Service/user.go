@@ -1,34 +1,40 @@
 package Service
 
 import (
+	"encoding/json"
 	"iris/app/Code"
+	"iris/app/Entry"
 	"iris/app/Exceptions"
-	"iris/app/Helpers"
 	"iris/app/Models"
-	"iris/libraries/proto"
+	"iris/config"
+	"time"
 )
 
 var User = &user{}
 
 type user struct{}
 
-func (s *user) GetUserInfo(UserId int64) (*proto.UserResponse, error) {
+func (s *user) GetUserInfo(UserId int64) (user *Entry.User, err error) {
 
-	user, err := Models.GetUserInfo(UserId)
+	pre := "user_info_key"
+	key := config.Cache.GetKey(pre, UserId)
+	val := config.Cache.GetArray(key)
 
+	if val == "" {
+		user = Models.GetUserInfo(UserId)
+		if user != nil {
+			err := config.Cache.SetArray(key, user, 300*time.Second)
+			if err != nil {
+				return nil, Exceptions.New(Code.ErrorCode, "set redis fail")
+			}
+		} else {
+			return nil, Exceptions.New(Code.ErrorCode, "set redis fail")
+		}
+	}
+	err = json.Unmarshal([]byte(val), user)
 	if err != nil {
-		return nil, Exceptions.New(Code.ErrorCode, "用户不存在")
+		return nil, err
 	}
+	return user, nil
 
-	rsp := &proto.UserResponse{
-		Code:    Code.SuccessCode,
-		Message: Code.Message[Code.SuccessCode],
-		Data:    &proto.User{},
-	}
-
-	if err := Helpers.ConvertStruct(user, rsp.Data); err != nil {
-		return nil, Exceptions.New(Code.ErrorCode, "转化失败")
-	}
-
-	return rsp, nil
 }
