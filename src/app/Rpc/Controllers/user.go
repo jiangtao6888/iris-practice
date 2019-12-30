@@ -25,7 +25,7 @@ func (c *user) GetUserInfo(ctx context.Context, req *proto.UserRequest) (rsp *pr
 		rsp.Code = Code.ErrorCode
 		return
 	}
-	if err := Helpers.ConvertStruct(user, rsp.Data); err != nil {
+	if err = Helpers.ConvertStruct(user, rsp.Data); err != nil {
 		rsp.Code = Code.ErrorCode
 		return
 	}
