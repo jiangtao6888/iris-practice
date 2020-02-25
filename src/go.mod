@@ -18,6 +18,7 @@ require (
 	github.com/jinzhu/gorm v1.9.11
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/iris/v12 v12.1.2
+	github.com/kataras/neffos v0.0.12
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect

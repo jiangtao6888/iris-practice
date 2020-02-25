@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
+	"github.com/kataras/neffos"
 	"os"
 )
 
@@ -16,6 +17,7 @@ type logInterface interface {
 type Router interface {
 	RegHttpHandler(app *iris.Application)
 	GetIdentifier(ctx context.Context) string
+	WebsocketHandler(conn *neffos.Server, app *iris.Application)
 }
 
 type RpcRouter interface {

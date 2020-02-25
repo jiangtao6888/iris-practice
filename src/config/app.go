@@ -6,9 +6,11 @@ import (
 	"github.com/go-redis/redis/v7"
 	"github.com/jinzhu/gorm"
 	"github.com/kataras/iris/v12"
+	"github.com/kataras/neffos"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"sync"
+	"time"
 )
 
 var config *Config
@@ -52,6 +54,7 @@ type ServerConfig struct {
 	UseInterfaceIp   bool        `toml:"use_interface_ip"`
 	Http             *HttpConfig `toml:"http"`
 	Charset          string      `toml:"charset"`
+	Websocket        *WsConfig   `toml:"websocket"`
 }
 
 type HttpConfig struct {
@@ -77,6 +80,7 @@ type Server struct {
 	app      *iris.Application
 	ctx      stdContext.Context
 	canceler func()
+	ws       *neffos.Server
 }
 
 type SysLogConfig struct {
@@ -120,4 +124,11 @@ type Producer struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 	wg     *sync.WaitGroup
+}
+
+type WsConfig struct {
+	Enable   bool          `toml:"enable"`
+	Endpoint string        `toml:"endpoint"`
+	Library  string        `toml:"library"`
+	IdleTime time.Duration `toml:"idle_time"`
 }

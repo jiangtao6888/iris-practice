@@ -74,6 +74,11 @@ func NewHttpServer(c *ServerConfig, OutFile *AccessLog, router Router) *Server {
 	// set route
 	server.router.RegHttpHandler(server.app)
 
+	// set websocket
+	if c.Websocket.Enable {
+		server.ws = NewWebsocketServer()
+		server.router.WebsocketHandler(server.ws, server.app)
+	}
 	return server
 }
 

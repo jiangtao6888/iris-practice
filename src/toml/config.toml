@@ -16,6 +16,11 @@
     time_format        = "2006-01-02 15:04:05.000"
     color              = false
     terminal           = false
+[server.websocket]
+    enable             = true
+    endpoint           = "/ws"
+    library            = "/ws.js"
+    idle_time          = 60
 [rpc]
     host               = "localhost"
     port               = 8089
