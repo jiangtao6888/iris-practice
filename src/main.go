@@ -42,9 +42,9 @@ func main() {
 	}
 
 	//init kafka
-	if err := config.InitKaProducer(config.GetKafka()); err != nil {
-		log.Fatalf("Fatal Error: can't initialize kafka!!!\n%s", err)
-	}
+	//if err := config.InitKaProducer(config.GetKafka()); err != nil {
+	//	log.Fatalf("Fatal Error: can't initialize kafka!!!\n%s", err)
+	//}
 
 	// init http
 	if err := config.InitHttpServer(config.GetHttp(), routes.Router); err != nil {

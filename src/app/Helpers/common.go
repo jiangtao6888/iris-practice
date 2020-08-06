@@ -21,8 +21,8 @@ func ConvertStruct(a interface{}, b interface{}) error {
 }
 
 func Error(ctx context.Context, errCode int64) {
-	data := make(map[int32]string)
-	SendRsp(ctx, &proto.Response{Code: errCode, Message: Code.Message[errCode], Data: data})
+	//data := make(map[int32]string)
+	SendRsp(ctx, &proto.Response{Code: errCode, Message: Code.Message[errCode]})
 }
 
 func SendRsp(ctx context.Context, rsp interface{}) {

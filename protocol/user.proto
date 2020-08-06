@@ -3,6 +3,10 @@ syntax = "proto3";
 package iris.user;
 option go_package = "libraries/proto";
 
+message List {
+    repeated User user = 1;
+}
+
 message User {
     int32 id = 1;
     string name = 2;

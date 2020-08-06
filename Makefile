@@ -13,8 +13,8 @@ dep:
 p:
 	mkdir -p src/libraries/proto
 	rm -rf src/libraries/proto/*
-	cd src; protoc -I ../protocol --gofast_out=plugins=grpc:. common.proto; cd -
-	cd src; protoc -I ../protocol --gofast_out=plugins=grpc:. user.proto; cd -
+	cd src; protoc -I ../protocol --go_out=plugins=grpc:. common.proto; cd -
+	cd src; protoc -I ../protocol --go_out=plugins=grpc:. user.proto; cd -
 
 	ls src/libraries/proto/*.pb.go | xargs sed -i -e "s/,omitempty//"
 	ls src/libraries/proto/*.pb.go | xargs sed -i -e "s@\"libraries/proto/@\"iris/libraries/proto/@"

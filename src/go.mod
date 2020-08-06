@@ -11,7 +11,7 @@ require (
 	github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072 // indirect
 	github.com/go-redis/redis/v7 v7.0.0-beta.4
 	github.com/gogo/protobuf v1.2.0
-	github.com/golang/protobuf v1.3.1
+	github.com/golang/protobuf v1.4.1
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/iris-contrib/middleware/jwt v0.0.0-20191219204441-78279b78a367
@@ -38,5 +38,6 @@ require (
 	github.com/yudai/pp v2.0.1+incompatible // indirect
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
 	google.golang.org/appengine v1.6.0 // indirect
-	google.golang.org/grpc v1.19.0
+	google.golang.org/grpc v1.27.0
+	google.golang.org/protobuf v1.25.0
 )

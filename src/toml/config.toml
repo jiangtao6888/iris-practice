@@ -1,5 +1,5 @@
 [server]
-    network_interface  = "eth0"
+    network_interface  = "en0"
     bind_interface     = true
     use_interface_ip   = true
     charset            = "utf8"
